@@ -1,0 +1,43 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cd D:/ToDoListApp && flutter pub get)",
+      "Bash(cd D:/ToDoListApp && flutter analyze --no-pub 2>&1 | head -30)",
+      "Bash(mkdir -p D:/ToDoListApp/assets/images)",
+      "Bash(mv D:/ToDoListApp/lib/images/backgroundforlightmode.png D:/ToDoListApp/assets/images/)",
+      "Bash(mv D:/ToDoListApp/lib/images/backgroundfordarkmode.png D:/ToDoListApp/assets/images/)",
+      "Bash(rmdir D:/ToDoListApp/lib/images)",
+      "Bash(flutter analyze *)",
+      "Bash(flutter pub *)",
+      "Bash(firebase login:list *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(awk {print NR\": \"length\\($0\\)\" chars\"} *)",
+      "Bash(findstr /N \"Icon\")",
+      "Bash(findstr /V \"//\")",
+      "Bash(Remove-Item -Path \"assets\\\\images\\\\icon\\\\focusorPomodoro.png\",\"assets\\\\images\\\\icon\\\\checklist.png\",\"assets\\\\images\\\\icon\\\\project.png\",\"assets\\\\images\\\\icon\\\\statistic.png\",\"assets\\\\images\\\\icon\\\\setting.png\",\"assets\\\\images\\\\icon\\\\notification.png\",\"assets\\\\images\\\\icon\\\\calendar.png\",\"assets\\\\images\\\\icon\\\\task.png\" -Force)",
+      "Bash(Remove-Item -Path \"assets\\\\images\\\\icon\" -Force -ErrorAction SilentlyContinue)",
+      "Bash(Remove-Item -Path \"lib\\\\views\\\\widgets\\\\app_asset_icon.dart\" -Force)",
+      "Bash(dart run *)",
+      "Bash(where pandoc *)",
+      "Bash(where python *)",
+      "Bash(where py *)",
+      "Bash(py -m pip show python-docx)",
+      "Bash(py *)",
+      "Bash(gh auth *)",
+      "Bash(git branch *)",
+      "Bash(git checkout *)",
+      "Bash(git push *)",
+      "Bash(python -c \"import docx; print\\('python-docx OK', docx.__version__\\)\")",
+      "Bash(python \"C:/Users/User/AppData/Local/Temp/md2docx.py\" docs/DOCUMENTATION.md docs/DOCUMENTATION.docx)",
+      "Bash(python \"C:/Users/User/AppData/Local/Temp/md2docx.py\" docs/PRESENTATION.md docs/PRESENTATION.docx)",
+      "Bash(python \"C:/Users/User/AppData/Local/Temp/md2docx.py\" \"D:/ToDoListApp/docs/DOCUMENTATION.md\" \"D:/ToDoListApp/docs/DOCUMENTATION.docx\")",
+      "Bash(python \"C:/Users/User/AppData/Local/Temp/md2docx.py\" \"D:/ToDoListApp/docs/PRESENTATION.md\" \"D:/ToDoListApp/docs/PRESENTATION.docx\")",
+      "Bash(python -c \"import sys,os; print\\(sys.executable\\); print\\('exists:', os.path.exists\\(r'D:/ToDoListApp/docs/DOCUMENTATION.md'\\)\\); print\\('cwd:', os.getcwd\\(\\)\\)\")",
+      "PowerShell(Get-ChildItem \"D:\\\\ToDoListApp\\\\docs\\\\\"; Write-Output \"=== converting ===\"; & python \"C:\\\\Users\\\\User\\\\AppData\\\\Local\\\\Temp\\\\md2docx.py\" \"D:\\\\ToDoListApp\\\\docs\\\\DOCUMENTATION.md\" \"D:\\\\ToDoListApp\\\\docs\\\\DOCUMENTATION.docx\"; & python \"C:\\\\Users\\\\User\\\\AppData\\\\Local\\\\Temp\\\\md2docx.py\" \"D:\\\\ToDoListApp\\\\docs\\\\PRESENTATION.md\" \"D:\\\\ToDoListApp\\\\docs\\\\PRESENTATION.docx\")",
+      "PowerShell(Test-Path *)",
+      "PowerShell(& python -c \"from docx import Document; d=Document\\(r'D:\\\\ToDoListApp\\\\docs\\\\DOCUMENTATION.docx'\\); print\\('DOCUMENTATION.docx -> paragraphs:', len\\(d.paragraphs\\), '| tables:', len\\(d.tables\\), '| first heading:', d.paragraphs[0].text\\); p=Document\\(r'D:\\\\ToDoListApp\\\\docs\\\\PRESENTATION.docx'\\); print\\('PRESENTATION.docx  -> paragraphs:', len\\(p.paragraphs\\), '| tables:', len\\(p.tables\\)\\)\")",
+      "PowerShell(Copy-Item *)"
+    ]
+  }
+}

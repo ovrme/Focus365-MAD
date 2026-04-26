@@ -1,0 +1,79 @@
+name: todolistapp
+description: "Focus24 - A full-featured task management app built with Flutter + Firebase"
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.10.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+
+  # Routing
+  go_router: ^15.1.2
+
+  # State Management
+  provider: ^6.1.4
+
+  # Firebase
+  firebase_core: ^3.13.0
+  firebase_auth: ^5.5.3
+  cloud_firestore: ^5.6.7
+
+  # UI & Charts
+  table_calendar: ^3.2.0
+  fl_chart: ^0.70.2
+
+  # Local Notifications
+  flutter_local_notifications: ^18.0.1
+  timezone: ^0.10.0
+  flutter_timezone: ^4.0.0
+
+  # Local Storage
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+
+  # Utilities
+  intl: ^0.20.2
+  uuid: ^4.5.1
+  share_plus: ^11.0.0
+  url_launcher: ^6.3.1
+  connectivity_plus: ^6.1.4
+
+  # Security
+  local_auth: ^2.3.0
+
+  # Export
+  pdf: ^3.11.2
+  path_provider: ^2.1.5
+  open_filex: ^4.6.0
+  file_picker: ^8.0.0
+
+  # Animations
+  confetti: ^0.7.0
+
+  # Typography (Battambang, Nokora, Inter served at runtime)
+  google_fonts: ^6.2.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.13.1
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  remove_alpha_ios: true
+  image_path: "assets/images/logos/logo.png"
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/
+    - assets/images/logos/
+    - assets/images/backgorund/
