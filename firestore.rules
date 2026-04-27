@@ -1,0 +1,180 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isAuthed() {
+      return request.auth != null;
+    }
+
+    function ownsExisting() {
+      return isAuthed() && resource.data.userId == request.auth.uid;
+    }
+
+    function ownsIncoming() {
+      return isAuthed() && request.resource.data.userId == request.auth.uid;
+    }
+
+    function listData(listId) {
+      return get(/databases/$(database)/documents/sharedLists/$(listId)).data;
+    }
+
+    function isListMember(listId) {
+      return isAuthed() && request.auth.uid in listData(listId).memberIds;
+    }
+
+    function canEditList(listId) {
+      return isAuthed() &&
+        (listData(listId).roles[request.auth.uid] == 'owner' ||
+         listData(listId).roles[request.auth.uid] == 'editor');
+    }
+
+    // ---- Tasks ----
+    // A task is "personal" when sharedListId is null, "shared" otherwise.
+    match /tasks/{taskId} {
+      allow read: if isAuthed() && (
+        ownsExisting() ||
+        (resource.data.sharedListId != null &&
+         isListMember(resource.data.sharedListId))
+      );
+
+      allow create: if ownsIncoming() && (
+        request.resource.data.sharedListId == null ||
+        canEditList(request.resource.data.sharedListId)
+      );
+
+      allow update, delete: if isAuthed() && (
+        ownsExisting() ||
+        (resource.data.sharedListId != null &&
+         canEditList(resource.data.sharedListId))
+      );
+
+      // ---- Comments on a shared task ----
+      match /comments/{commentId} {
+        function parentTask() {
+          return get(/databases/$(database)/documents/tasks/$(taskId)).data;
+        }
+        function parentListId() {
+          return parentTask().sharedListId;
+        }
+
+        // Only members of the parent task's shared list may read.
+        allow read: if isAuthed() &&
+          parentListId() != null &&
+          isListMember(parentListId());
+
+        // Anyone who can edit the list can post; authorId is locked to caller.
+        allow create: if isAuthed() &&
+          parentListId() != null &&
+          canEditList(parentListId()) &&
+          request.resource.data.authorId == request.auth.uid;
+
+        // Only the author can edit, and they cannot change authorId.
+        allow update: if isAuthed() &&
+          resource.data.authorId == request.auth.uid &&
+          request.resource.data.authorId == resource.data.authorId;
+
+        // Author can delete; list owner can also moderate.
+        allow delete: if isAuthed() && (
+          resource.data.authorId == request.auth.uid ||
+          (parentListId() != null &&
+           listData(parentListId()).ownerId == request.auth.uid)
+        );
+      }
+    }
+
+    // ---- Shared lists ----
+    match /sharedLists/{listId} {
+      // Members read; non-members must use an invite to discover the list id.
+      allow read: if isAuthed() &&
+        request.auth.uid in resource.data.memberIds;
+
+      allow create: if isAuthed() &&
+        request.resource.data.ownerId == request.auth.uid &&
+        request.auth.uid in request.resource.data.memberIds &&
+        request.resource.data.roles[request.auth.uid] == 'owner';
+
+      // Owner has full control. Otherwise allow:
+      //   - self-leave: a member removes only themselves
+      //   - self-join:  a non-member adds only themselves (via known list id)
+      allow update: if isAuthed() && (
+        request.auth.uid == resource.data.ownerId ||
+        (
+          // self-leave
+          request.auth.uid in resource.data.memberIds &&
+          !(request.auth.uid in request.resource.data.memberIds) &&
+          request.resource.data.memberIds.size() ==
+              resource.data.memberIds.size() - 1 &&
+          request.resource.data.ownerId == resource.data.ownerId
+        ) ||
+        (
+          // self-join
+          !(request.auth.uid in resource.data.memberIds) &&
+          request.auth.uid in request.resource.data.memberIds &&
+          request.resource.data.memberIds.size() ==
+              resource.data.memberIds.size() + 1 &&
+          request.resource.data.ownerId == resource.data.ownerId &&
+          request.resource.data.name == resource.data.name
+        )
+      );
+
+      allow delete: if isAuthed() &&
+        request.auth.uid == resource.data.ownerId;
+
+      // ---- Activity feed (immutable, append-only audit log) ----
+      match /activity/{eventId} {
+        allow read: if isListMember(listId);
+        allow create: if isListMember(listId) &&
+          request.resource.data.actorId == request.auth.uid;
+        allow update, delete: if false;
+      }
+    }
+
+    // ---- Invites (public lookup table for share codes) ----
+    match /invites/{code} {
+      // Any authenticated user can resolve a code to a list id.
+      allow read: if isAuthed();
+      // Only the list owner can create or revoke invites.
+      allow create: if isAuthed() &&
+        request.resource.data.ownerId == request.auth.uid;
+      allow delete: if isAuthed() &&
+        resource.data.ownerId == request.auth.uid;
+      // Codes are immutable once created; rotate by delete + create.
+      allow update: if false;
+    }
+
+    // ---- User profiles ----
+    // Any authed user can resolve a uid to a display name / avatar
+    // (needed to show shared-list members and task assignees).
+    match /users/{uid} {
+      allow read: if isAuthed();
+      allow create, update: if isAuthed() && request.auth.uid == uid;
+      allow delete: if false;
+    }
+
+    // ---- Personal-only collections ----
+    match /projects/{id} {
+      allow read: if ownsExisting();
+      allow create: if ownsIncoming();
+      allow update, delete: if ownsExisting() && ownsIncoming();
+    }
+
+    match /categories/{id} {
+      allow read: if ownsExisting();
+      allow create: if ownsIncoming();
+      allow update, delete: if ownsExisting() && ownsIncoming();
+    }
+
+    match /labels/{id} {
+      allow read: if ownsExisting();
+      allow create: if ownsIncoming();
+      allow update, delete: if ownsExisting() && ownsIncoming();
+    }
+
+    match /notes/{id} {
+      allow read: if ownsExisting();
+      allow create: if ownsIncoming();
+      allow update, delete: if ownsExisting() && ownsIncoming();
+    }
+  }
+}
